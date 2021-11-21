@@ -9,7 +9,7 @@ const ValidationError = require('../errors/ValidationError');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 // проводит аутентификацию пользователя
-const login = (req, res, next) => {
+const signIn = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -38,6 +38,37 @@ const login = (req, res, next) => {
     .catch(next); // эквивалентна catch(err => next(err))
 };
 
+// создаёт пользователя
+const signUp = (req, res, next) => {
+  const { name, email, password } = req.body;
+
+  // проверяем, существует ли уже пользователь с таким email
+  // если нет, то возвращаем хэш пароля
+  User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        throw new ConflictError(`Такой email уже существует у пользователя id ${user._id}`);
+      }
+      return bcrypt.hash(password, SALT_ROUND);
+    })
+    // создаем пользователя
+    .then((hash) => User.create({ name, email, password: hash }))
+    .then((userData) => {
+      res
+        .status(201)
+        .send({
+          name: userData.name,
+          email: userData.email,
+        });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError(`При создании пользователя переданы некорректные данные: ${err.message}`));
+      }
+      next(err);
+    });
+};
+
 // возвращает данные текущего пользователя
 const getMe = (req, res, next) => {
   const userId = req.user._id;
@@ -51,39 +82,6 @@ const getMe = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new NotFoundError('Пользователь не найден'));
-      }
-      next(err);
-    });
-};
-
-// создаёт пользователя
-const createUser = (req, res, next) => {
-  const { email, password } = req.body;
-
-  // проверяем, существует ли уже пользователь с таким email
-  // если нет, то возвращаем хэш пароля
-  User.findOne({ email })
-    .then((user) => {
-      if (user) {
-        throw new ConflictError(`Такой email уже существует у пользователя id ${user._id}`);
-      }
-      return bcrypt.hash(password, SALT_ROUND);
-    })
-    // создаем пользователя
-    .then((hash) => User.create({ email, password: hash }))
-    .then((userData) => {
-      res
-        .status(201)
-        .send({
-          name: userData.name,
-          about: userData.about,
-          avatar: userData.avatar,
-          email: userData.email,
-        });
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError(`При создании пользователя переданы некорректные данные: ${err.message}`));
       }
       next(err);
     });
@@ -120,9 +118,9 @@ const signOut = (req, res) => {
 };
 
 module.exports = {
-  login,
+  signIn,
+  signUp,
   getMe,
-  createUser,
   patchMe,
   signOut,
 };

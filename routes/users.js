@@ -1,23 +1,8 @@
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
+const { patchMeValidator } = require('../middlewares/validators');
+const { getMe, patchMe } = require('../controllers/users');
 
-const {
-  getMe,
-  patchMe,
-  signOut,
-} = require('../controllers/users');
-
-// возвращает данные текущего пользователя (email и имя)
-router.get('/me', getMe);
-
-// обновляет данные текущего пользователя (email и имя)
-router.patch('/me', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    email: Joi.string().required().min(5),
-  }),
-}), patchMe);
-
-router.post('/signout', signOut); // выходит из профиля и чистит куки
+router.get('/me', getMe); // возвращает данные текущего пользователя (email и имя)
+router.patch('/me', patchMeValidator, patchMe); // обновляет данные текущего пользователя (email и имя)
 
 module.exports = router;

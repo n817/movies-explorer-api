@@ -5,7 +5,7 @@ const NotFoundError = require('../errors/NotFoundError');
 
 // возвращает все сохранённые пользователем фильмы
 const getMovies = (req, res, next) => {
-  Movie.find({})
+  Movie.find({ owner: req.user._id })
     .then((MoviesData) => res.status(200).send(MoviesData))
     .catch(next); // эквивалентна catch(err => next(err))
 };
@@ -21,7 +21,6 @@ const postMovie = (req, res, next) => {
     image,
     trailer,
     thumbnail,
-    owner,
     movieId,
     nameRU,
     nameEN,
@@ -35,7 +34,7 @@ const postMovie = (req, res, next) => {
     image,
     trailer,
     thumbnail,
-    owner,
+    owner: req.user._id,
     movieId,
     nameRU,
     nameEN,
