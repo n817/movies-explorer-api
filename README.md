@@ -1,5 +1,8 @@
 # Back-end проекта movies-explorer
 
+https://api.movies.n817.ru
+IP-адрес: 51.250.23.93
+
 ## Директории
 
 `/routes` — папка с файлами роутера  
