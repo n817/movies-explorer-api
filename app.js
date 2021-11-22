@@ -10,7 +10,7 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 // подключаемся к локальному серверу mongo
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+mongoose.connect('mongodb://localhost:27017/moviesdb', {
   useNewUrlParser: true,
 });
 

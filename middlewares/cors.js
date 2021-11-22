@@ -3,6 +3,7 @@ const allowedCors = [
   'https://movies.n817.ru',
   'https://www.movies.n817.ru',
   'localhost:3000',
+  'localhost:3001',
 ];
 
 // Значение для заголовка Access-Control-Allow-Methods по умолчанию (разрешены все типы запросов)

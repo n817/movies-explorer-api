@@ -30,8 +30,6 @@ const signIn = (req, res, next) => {
         .status(200)
         .send({
           name: userData.name,
-          about: userData.about,
-          avatar: userData.avatar,
           email: userData.email,
         });
     })
@@ -101,9 +99,12 @@ const patchMe = (req, res, next) => {
     .then((userData) => res.status(200).send(userData))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError(`При обновлении профиля переданы некорректные данные: ${err.message}`));
+        return next(new ValidationError(`При обновлении профиля переданы некорректные данные: ${err.message}`));
       }
-      next(err);
+      if (err.code === 11000) {
+        return next(new ConflictError('Такой email уже существует'));
+      }
+      return next(err);
     });
 };
 

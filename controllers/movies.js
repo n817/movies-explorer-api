@@ -39,7 +39,7 @@ const postMovie = (req, res, next) => {
     nameRU,
     nameEN,
   })
-    .then((MovieData) => res.status(201).send(MovieData))
+    .then((movieData) => res.status(201).send(movieData))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new CastError(`При создании фильма переданы некорректные данные: ${err.message}`));
@@ -50,7 +50,7 @@ const postMovie = (req, res, next) => {
 
 // удаляет сохранённый фильм по id
 const deleteMovie = (req, res, next) => {
-  Movie.findById(req.params.MovieId)
+  Movie.findById(req.params.movieObjectId)
     .orFail(() => {
       throw new NotFoundError('не найден фильм по заданному id');
     })
@@ -58,8 +58,8 @@ const deleteMovie = (req, res, next) => {
       if (!movie.owner.equals(req.user._id)) {
         throw new ForbiddenError('запрещено удалять фильмы других пользователей');
       } else {
-        Movie.findByIdAndRemove(req.params.MovieId)
-          .then((MovieData) => res.status(200).send(MovieData))
+        Movie.findByIdAndRemove(req.params.movieObjectId)
+          .then((movieData) => res.status(200).send({ movieData, message: 'фильм успешно удален' }))
           .catch(next);
       }
     })
