@@ -1,12 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { SALT_ROUND } = require('../configs');
+const { SECRET_KEY, SALT_ROUND } = require('../configs');
 const User = require('../models/user');
 const ConflictError = require('../errors/ConflictError');
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
-
-const { NODE_ENV, JWT_SECRET } = process.env;
 
 // проводит аутентификацию пользователя
 const signIn = (req, res, next) => {
@@ -18,7 +16,7 @@ const signIn = (req, res, next) => {
       // создадим и вернем токен
       const token = jwt.sign(
         { _id: userData._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        SECRET_KEY,
         { expiresIn: '7d' },
       );
       res
@@ -62,8 +60,9 @@ const signUp = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError(`При создании пользователя переданы некорректные данные: ${err.message}`));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -73,16 +72,12 @@ const getMe = (req, res, next) => {
   User.findById(userId)
     .then((userData) => {
       if (userData) {
-        res.status(200).send(userData);
+        res.send(userData);
+      } else {
+        throw new NotFoundError('Пользователь не найден');
       }
-      throw new NotFoundError('Пользователь не найден');
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new NotFoundError('Пользователь не найден'));
-      }
-      next(err);
-    });
+    .catch(next);
 };
 
 // обновляет данные текущего пользователя

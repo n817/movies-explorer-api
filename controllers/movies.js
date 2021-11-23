@@ -6,7 +6,7 @@ const NotFoundError = require('../errors/NotFoundError');
 // возвращает все сохранённые пользователем фильмы
 const getMovies = (req, res, next) => {
   Movie.find({ owner: req.user._id })
-    .then((MoviesData) => res.status(200).send(MoviesData))
+    .then((MoviesData) => res.send(MoviesData))
     .catch(next); // эквивалентна catch(err => next(err))
 };
 
@@ -43,8 +43,9 @@ const postMovie = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new CastError(`При создании фильма переданы некорректные данные: ${err.message}`));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -66,8 +67,9 @@ const deleteMovie = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new CastError('Невалидный id фильма'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 

@@ -30,7 +30,6 @@ const userSchema = new mongoose.Schema({
 });
 
 // метод проверяет логин/пароль и возвращает объект пользователя или ошибку
-// eslint-disable-next-line func-names
 userSchema.statics.findUserByCredentials = function (email, password) {
   // попытаемся найти пользователя по почте
   return this.findOne({ email }).select('+password') // this — это модель User

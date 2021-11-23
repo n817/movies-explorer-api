@@ -1,16 +1,10 @@
 const router = require('express').Router();
-const { errors } = require('celebrate');
 const { signInValidator, signUpValidator } = require('../middlewares/validators');
 const { signIn, signUp, signOut } = require('../controllers/users');
 const auth = require('../middlewares/auth');
 const usersRouter = require('./users');
 const moviesRouter = require('./movies');
 const NotFoundError = require('../errors/NotFoundError');
-const { requestLogger, errorLogger } = require('../middlewares/logger');
-const cors = require('../middlewares/cors');
-
-router.use(requestLogger); // подключаем логгер запросов
-router.use(cors); // подключаем механизм безопасности браузера cors
 
 /*
 // краш-тест сервера
@@ -28,9 +22,6 @@ router.post('/signout', signOut); // выходит из профиля и чи�
 router.use(auth); // мидлвэр авторизации (всем роутам ниже потребуется авторизация)
 router.use('/users', usersRouter); // /users + usersRouter
 router.use('/movies', moviesRouter); // /cards + cardsRouter
-
-router.use(errorLogger); // подключаем логгер ошибок
-router.use(errors()); // обработчик ошибок celebrate
 
 // обработка запросов на несуществующий роут
 router.use('*', () => {

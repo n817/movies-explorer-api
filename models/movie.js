@@ -33,7 +33,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => isURL(v),
+      validator: (value) => isURL(value),
       message: 'Неправильный формат ссылки на постер к фильму',
     },
   },
@@ -42,7 +42,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => isURL(v),
+      validator: (value) => isURL(value),
       message: 'Неправильный формат ссылки на трейлер фильма',
     },
   },
@@ -51,7 +51,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => isURL(v),
+      validator: (value) => isURL(value),
       message: 'Неправильный формат ссылки на миниатюрное изображение постера к фильму',
     },
   },
