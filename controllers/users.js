@@ -5,6 +5,7 @@ const User = require('../models/user');
 const ConflictError = require('../errors/ConflictError');
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
+const user = require('../models/user');
 
 // проводит аутентификацию пользователя
 const signIn = (req, res, next) => {
@@ -29,6 +30,7 @@ const signIn = (req, res, next) => {
         .send({
           name: userData.name,
           email: userData.email,
+          _id: userData._id,
         });
     })
     .catch(next); // эквивалентна catch(err => next(err))
@@ -55,6 +57,7 @@ const signUp = (req, res, next) => {
         .send({
           name: userData.name,
           email: userData.email,
+          _id: userData._id,
         });
     })
     .catch((err) => {
